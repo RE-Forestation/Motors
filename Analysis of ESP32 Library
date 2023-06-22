@@ -1,5 +1,42 @@
 Working code:
 Servo servoMotor;
 servoMotor.attach(26);
-servoMotor.write(65)
+servoMotor.write(65);
 -----
+Servo servoMotor;
+
+Call stack					line number		what it does
+Servo::Servo				line 30 - 58	servoMotor.servoChannel set to 1, representing a server instance that can be connected to one of the 16 ESP32 pwm pins
+Servo::Servo|Servo.h		line 63			servoMotor.ticks set to 4825
+Servo::Servo|Servo.h		line 64			servoMotor.timer_width set to 16
+Servo::Servo				line 65			servoMotor.pin set to -1 *(uninitialised)
+Servo::Servo|Servo.h		line 66			servoMotor.min set to 1000 / 400
+Servo::Servo|Servo.h		line 67			servoMotor.max set to 2000 / 2400
+Servo::Servo				line 68			servoMotor.timer_width_ticks set to 65536
+
+servoMotor.attach(26);
+
+Call stack					line number		what it does
+Servo::attach|Servo.h		line 106 - 109	Call Servo::attach with parameters 1000 / 400 and 2000 / 2400 respectively
+Servo::attach|Servo::attach	line 120 - 127	If servoMotor not attached which is true, mark as attached and reinitialise. No change in parameters
+Servo::attach|Servo::attach	line 128		servoMotor.pin = 26 <- valid pwm pin
+Servo::attach|Servo::attach line 136 - 141	limits bounds of min max. No change in parameters
+...Servo::attach|Ledc		line 144		Call ledcSetup(1,50,16)
+...Servo::attach|Ledc		line 145		Call ledcAttachPin(26,1)
+
+servoMotor.write(65);
+
+Call stack					line number		what it does
+Servo::write				line 164-170	Check if parameter is within 0 to 180. No change in parameters
+Servo::write				line 171		maps 65 of 0 to 180 onto 1000 / 400 to 2000 / 2400, which is 1361 / 1122
+Servo::write				line 173		Call Servo::writeMiliseconds(1361 / 1122)
+...Servo::writeMicroseconds line 181 - 184  Limits bounds of value to min max. No change in parameters
+...Servo::writeMicroseconds line 186		Calls usToTicks(1361 / 1122)
+...Servo::usToTicks			line 257 - 260  returns (1361 / 1122) * 65536/20000 or 4460 / 3677
+...Servo::writeMicroseconds line 187		servo.Motor.ticks reset to 4460 / 3677
+...Ledc						line 189		Call ledcWrite(1,4460 / 3677) <- max duty is 65536, max servo duty is 35646 / 42776
+
+Duty% = 6.805% / 5.611%
+
+
+

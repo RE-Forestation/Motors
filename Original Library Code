@@ -1,3 +1,9 @@
+// initialize the class variable ServoCount
+int Servo::ServoCount = 0;
+
+// The ChannelUsed array elements are 0 if never used, 1 if in use, and -1 if used and disposed
+// (i.e., available for reuse)
+int Servo::ChannelUsed[MAX_SERVOS+1] = {0}; // we ignore the zeroth element
 
 ESP32 Servo.h
 ---
@@ -100,6 +106,11 @@ int Servo::attach(int pin, int min, int max)
         ledcAttachPin(this->pinNumber, this->servoChannel);   // GPIO pin assigned to channel        
     }
     else return 0;  
+}
+
+int Servo::attach(int pin)
+{
+    return (this->attach(pin, DEFAULT_uS_LOW, DEFAULT_uS_HIGH));
 }
 
 void Servo::write(int value)

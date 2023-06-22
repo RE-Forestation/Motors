@@ -1,0 +1,5 @@
+Working code:
+Servo servoMotor;
+servoMotor.attach(26);
+servoMotor.write(65)
+-----

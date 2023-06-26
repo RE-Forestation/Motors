@@ -1,8 +1,9 @@
 #define PinEN 2
 #define PinPH 22
-#define PinSleep 23
-#define PinSqA 24
-#define PinSqB 25
+#define PinPmode 23
+#define PinSleep 24
+#define PinSqA 25
+#define PinSqB 26
 
 int duty = 200;
 
@@ -12,10 +13,11 @@ int lastinterrupt = 0,
 void setup() {
     pinMode(PinEN,OUTPUT);
     pinMode(PinPH,OUTPUT);
+    pinMode(PinPmode,OUTPUT);
     pinMode(PinSleep,OUTPUT);
     attachInterrupt(PinSqA, interruptservice, RISING);
     attachInterrupt(PinSqB, interruptservice, RISING);
-    digitalWrite(PinPH, LOW);
+    digitalWrite(PinPmode, LOW);
     delay(500);
     digitalWrite(PinSleep,HIGH);
 }

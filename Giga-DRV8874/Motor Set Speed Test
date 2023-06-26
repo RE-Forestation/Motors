@@ -1,0 +1,22 @@
+#define PinEN 2
+#define PinPH 22
+#define PinSleep 23
+
+
+int speed = 0.2,
+    sp25r = 42,
+    duty = 21.647*speed*sp25r;
+
+void setup() {
+    pinMode(PinEN,OUTPUT);
+    pinMode(PinPH,OUTPUT);
+    pinMode(PinSleep,OUTPUT);
+
+    digitalWrite(PinPH, LOW);
+    delay(500);
+    digitalWrite(PinSleep,HIGH);
+}
+
+void loop() {
+  analogWrite(PinEN,duty);
+}

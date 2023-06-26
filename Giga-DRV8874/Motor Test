@@ -1,0 +1,17 @@
+#define PinEN 2
+#define PinPH 22
+#define PinSleep 23
+
+void setup() {
+    pinMode(PinEN,OUTPUT);
+    pinMode(PinPH,OUTPUT);
+    pinMode(PinSleep,OUTPUT);
+
+    digitalWrite(PinPH, LOW);
+    delay(500);
+    digitalWrite(PinSleep,HIGH);
+}
+
+void loop() {
+  analogWrite(PinEN,duty);
+}

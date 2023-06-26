@@ -1,0 +1,37 @@
+#define PinEN 2
+#define PinPH 22
+#define PinSleep 23
+#define PinSqA 24
+#define PinSqB 25
+
+int duty = 200;
+
+int lastinterrupt = 0,
+    completed = 1;
+
+void setup() {
+    pinMode(PinEN,OUTPUT);
+    pinMode(PinPH,OUTPUT);
+    pinMode(PinSleep,OUTPUT);
+    attachInterrupt(PinSqA, interruptservice, RISING);
+    attachInterrupt(PinSqB, interruptservice, RISING);
+    digitalWrite(PinPH, LOW);
+    delay(500);
+    digitalWrite(PinSleep,HIGH);
+}
+
+void loop() {
+  analogWrite(PinEN,duty);
+  if(completed) digitalWrite(PinPH,HIGH);
+  else digitalWrite(PinPH,LOW);
+}
+
+void interruptservice(){
+    int currinterrupt = millis();
+    if(currinterrupt-5000>lastinterrupt){
+        lastinterrupt = currinterrupt;
+        completed = !completed;
+        digitalWrite(PinEN,LOW);
+        delay(500);
+    }
+}

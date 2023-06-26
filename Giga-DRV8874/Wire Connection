@@ -1,22 +1,22 @@
-GIGA		DRV8874			Type	Function
-GPIO 2		Input 1			PWM		Enable pin in basic mode (EN)
-GPIO 22		Input 2			Digital	Phase pin in basic mode (PH)
-GPIO 23		Pmode			Digital	Phase pin for driver
-GPIO 24		Sleep*			Digital	Enable pin for driver, sets driver mode
-Ground		Ground			Ground	Ground
+GIGA		DRV8874			Type		Function
+GPIO 2		Input 1			PWM			Enable pin in basic mode (EN)
+GPIO 22		Input 2			Digital		Phase pin in basic mode (PH)
+GPIO 23		Pmode			Digital		Phase pin for driver
+GPIO 24		Sleep*			Digital		Enable pin for driver, sets driver mode
+Ground		Ground			Ground		Ground
 ----
-GIGA		36GP555			Type	Function
-GPIO 25		Encoder 1		Input	Interupt pin
-GPIO 26		Encoder 2		Input	Interupt pin
-GPIO 27		Encoder VCC		Power	Power encoder
-Ground		Encoder ground	Ground	Ground
+GIGA		36GP555			Type		Function
+GPIO 25		Encoder 1		Input		Interupt pin
+GPIO 26		Encoder 2		Input		Interupt pin
+GPIO 27		Encoder VCC		Power		Power encoder
+Ground		Encoder ground	Ground		Ground
 ----
-DRV8874		36GP555			Type	Function
-Output 1	VCC				Power	Power motor
-Output 2	Ground			Power	Power motor
+DRV8874		36GP555			Type		Function
+Output 1	VCC				Power		Power motor
+Output 2	Ground			Power		Power motor
 ----
-DRV8874		Power			Power	Function
-Vin			Power			Power	Power
-Ground		Ground			Ground	Ground
+DRV8874		Power			Power		Function
+Vin			Power			Power		Power
+Ground		Ground			Ground		Ground
 
 We will only be using basic mode for now.

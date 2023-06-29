@@ -1,7 +1,14 @@
+#include <Adafruit_PWMServoDriver.h>
+Adafruit_PWMServoDriver pca=Adafruit_PWMServoDriver(0x40);
+pca.begin();
+pca.setPWMFreq(500);
 
 
 void setup(){
+pca.begin();
+pca.setPWMFreq(500);
 }
 
 void loop(){
+pca.setPin(5,3213);
 }

@@ -29,6 +29,7 @@ void loop() {
 }
 
 void interruptservice(){
+    noInterrupts();
     int currinterrupt = millis();
     if(currinterrupt-5000>lastinterrupt){
         lastinterrupt = currinterrupt;
@@ -36,4 +37,5 @@ void interruptservice(){
         digitalWrite(PinEN,LOW);
         delay(500);
     }
+    interrupts();
 }

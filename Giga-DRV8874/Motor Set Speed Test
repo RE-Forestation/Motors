@@ -4,8 +4,8 @@
 #define PinSleep 24
 
 int speed = 0.2,
-    sp25r = 42,
-    duty = 21.647*speed*sp25r;
+    sp25r = 42;
+float duty = 21.647*speed*sp25r;
 
 void setup() {
     pinMode(PinEN,OUTPUT);
@@ -20,5 +20,5 @@ void setup() {
 
 void loop() {
     digitalWrite(PinPH, LOW);
-    analogWrite(PinEN,duty);
+    analogWrite(PinEN,(int) duty);
 }

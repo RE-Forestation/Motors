@@ -29,7 +29,7 @@ void loop() {
   else digitalWrite(PinPH,LOW);
 }
 
-void interruptservice(){
+void interruptservice(){ //Cannot use delay or millis
     noInterrupts();
     if(currinterrupt-5000>lastinterrupt){
         lastinterrupt = currinterrupt;

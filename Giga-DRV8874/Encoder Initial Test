@@ -8,7 +8,7 @@
 int duty = 200;
 
 volatile int lastinterrupt = 0, currinterrupt = 0,
-    completed = 1;
+         completed = 1;
 
 void setup() {
     pinMode(PinEN,OUTPUT);

@@ -1,23 +1,23 @@
 #include <Adafruit_PWMServoDriver.h>
 
-#define PinEN 1
-#define PinPH 2
-#define PinPmode 3
-#define PinSleep 4
+#define PinIN1 0
+#define PinIN2 1
+#define PinPmode 22
+#define PinSleep 23
 
 
 void setup(){
-	pca.begin();
+	pinMode(PinPmode,OUT);
 	Adafruit_PWMServoDriver pca = Adafruit_PWMServoDriver(0x40);
 	pca.begin();
 	pca.setPWMFreq(500); //GIGA default
 
-	pca.setPin(PinPmode,0);
+	digitalWrite(PinPmode,HIGH);
 	delay(500);
-	pca.setPin(PinSleep, 4095);
+	digitalWrite(PinPmode,HIGH);
 }
 
 void loop(){
 	pca.setPin(PinPH,0);
-	pca.setPin(PinEN,3213);
+	pca.setPin(PinEN,4095);
 }

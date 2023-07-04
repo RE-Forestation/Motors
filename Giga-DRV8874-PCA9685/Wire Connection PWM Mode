@@ -1,0 +1,44 @@
+PCB
+Pin			From		From Pin	From Type	Function
+
+GND			Power		GND			GND			Power GND transfer
+GND			GIGA		GND			GND			GIGA GND transfer
+3.3V		GIGA		3.3V		3.3V		3.3V
+
+PCA9685
+Pin			From		From Pin	From Type	Function
+
+GND			PCB			GND			GND			GND
+OE			-			-			LOW			Enable
+SCL			GIGA		GPIO 8		SCL2		I2C
+SDA			GIGA		GPIO 9		SDA2		I2C
+VCC			PCB			3.3V		3.3V		3.3V I2C Pullup, also powers PCA9685
+V+			-			-			High Z		Aux power
+
+DRV8874
+Pin			From		From Pin	From Type	Function
+
+VM			-			-			High Z		Power out
+GND			-			-			GND			GND
+EN/IN1		PCA9685		PWM 0		PWM			PWM
+PH/IN2		PCA9685		PWM 1		PWM			PWM
+PMODE		GIGA		GPIO 22		HIGH		PMODE set to PWM Mode
+SLEEP*		GIGA		GPIO 23		HIGH		Enable DRV8874
+VREF		-			-			High Z		-
+
+VIN			Power		24V			24V			Motor Power
+GND			Power		GND			GND			GND
+
+36GP-555
+Pin			From		From Pin	From Type	Function
+
+Red			DRV8874		OUT1		Power		Power
+Black		DRV8874		OUT2		Power		Power
+Green		PCB			GND			GND			Encoder GND
+Blue		PCB			3.3V		3.3V		Encoder Power
+
+GIGA
+Pin			From		From Pin	From Type	Function
+
+GPIO 24		36GP-555	Yellow		PWM			Encoder Interrupt
+GPIO 25		36GP-555	White		PWM			Encoder Interrupt

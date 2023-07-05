@@ -1,23 +1,33 @@
 #include <Adafruit_PWMServoDriver.h>
 
-#define PinIN1 0
-#define PinIN2 1
-#define PinPmode 22
-#define PinSleep 23
+							// Total 5 pins controlled by GIGA
+#define PinIN1 0			// PCA9685 PWM0 via SCL2 and SDA2, handled by Adafruit
+#define PinIN2 1			// PCA9685 PWM1
+#define PinPmode 22			// GIGA GPIO 22
+#define PinSleep 23			// GIGA GPIO 23
+//#define PinInterrupt 24	   GIGA GPIO 24 Interrupt pin not used
 
+Adafruit_PWMServoDriver pca = Adafruit_PWMServoDriver(0x40);
 
 void setup(){
 	pinMode(PinPmode,OUT);
-	Adafruit_PWMServoDriver pca = Adafruit_PWMServoDriver(0x40);
-	pca.begin();
-	pca.setPWMFreq(500); //GIGA default
+	pinMode(PinSleep, OUT);
 
-	digitalWrite(PinPmode,HIGH);
+	pca.begin();
+	pca.setPWMFreq(500); // GIGA default
+
+	pca.setPin(PinIN1,4095); // Start from break position
+	pca.setPin(PinIN2,4095);
+
+	digitalWrite(PinPmode,HIGH); // Set input mode to pwm mode
 	delay(500);
-	digitalWrite(PinPmode,HIGH);
+	digitalWrite(PinSleep,HIGH); // Activate board when everything is ready
 }
 
 void loop(){
-	pca.setPin(PinPH,0);
-	pca.setPin(PinEN,4095);
+	decrease(4095,PinIN1);
+}
+
+void decrease(int start = 4095, int Pin){	//Decreases start from 4095 or value provided to zero
+	while(start-->0) pca.setPin(Pin);
 }

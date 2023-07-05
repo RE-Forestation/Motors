@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Giga-DRV8874",
+    "\\Giga-DRV8874-PCA9685"
   ],
-  "SelectedNode": "\\C:\\Users\\hatoa\\Source\\Repos\\Motors",
+  "SelectedNode": "\\Giga-DRV8874-PCA9685\\Basic Motor Test PWM Mode",
   "PreviewInSolutionExplorer": false
 }

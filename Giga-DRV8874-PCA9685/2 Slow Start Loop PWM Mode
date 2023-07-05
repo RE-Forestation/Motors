@@ -10,8 +10,8 @@
 Adafruit_PWMServoDriver pca = Adafruit_PWMServoDriver(0x40);
 
 void setup(){
-	pinMode(PinPmode,OUT);
-	pinMode(PinSleep, OUT);
+	pinMode(PinPmode, OUTPUT);
+	pinMode(PinSleep, OUTPUT);
 
 	pca.begin();
 	pca.setPWMFreq(500); // GIGA default
@@ -25,9 +25,11 @@ void setup(){
 }
 
 void loop(){
-	decrease(4095,PinIN1);
+	decrease(4095,PinIN1); // IN1/IN2 goes from HIGH/HIGH (Break) to LOW/HIGH (Max Reverse) gradually
 }
 
-void decrease(int start = 4095, int Pin){	//Decreases start from 4095 or value provided to zero
-	while(start-->0) pca.setPin(Pin);
+void decrease(int start = 4095, int Pin){
+
+	//Decreases start from 4095 or value provided to zero
+	while(start-->0) {pca.setPin(Pin); delay(10);}
 }

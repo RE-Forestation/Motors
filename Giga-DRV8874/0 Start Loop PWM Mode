@@ -1,0 +1,24 @@
+							// Total 5 pins controlled by GIGA
+#define PinIN1 2			// GIGA GPIO 2
+#define PinIN2 3			// GIGA GPIO 3
+#define PinPmode 22			// GIGA GPIO 22
+#define PinSleep 23			// GIGA GPIO 23
+//#define PinInterrupt 24	   GIGA GPIO 24 Interrupt pin not used
+
+
+void setup() {
+    pinMode(PinIN1,OUTPUT);
+    pinMode(PinIN2,OUTPUT);
+    pinMode(PinPmode,OUTPUT);
+    pinMode(PinSleep,OUTPUT);
+    
+    digitalWrite(PinIN1,    HIGH);
+    digitalWrite(PinIN2,    HIGH);      // IN1/IN2 is HIGH/HIGH (Break);
+    digitalWrite(PinPmode,  HIGH);      // Set input mode to pwm mode
+    delay(500);
+    digitalWrite(PinSleep,  HIGH);      // Activate board when everything is ready
+}
+
+void loop() {
+    digitalWrite(PinIN1,    LOW);       // IN1/IN2 is LOW/HIGH (Max Reverse)
+}

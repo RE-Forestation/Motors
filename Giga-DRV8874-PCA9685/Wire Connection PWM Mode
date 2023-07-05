@@ -41,4 +41,3 @@ GIGA
 Pin			From		From Pin	From Type	Function
 
 GPIO 24		36GP-555	Yellow		PWM			Encoder Interrupt
-GPIO 25		36GP-555	White		PWM			Encoder Interrupt

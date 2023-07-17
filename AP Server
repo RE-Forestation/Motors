@@ -16,8 +16,7 @@ void setup() {
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_BLUE, OUTPUT);
 
-  // check for the WiFi module:
-  if (WiFi.status() == WL_NO_MODULE) {
+  if (WiFi.status() == WL_NO_MODULE) { // check for the WiFi module
     Serial.println("Communication with WiFi module failed!");
     while (true);
   }
@@ -29,18 +28,15 @@ void setup() {
     Serial.println("Creating access point failed");
     while (true);
   }
-
-  // wait 10 seconds for connection:
-  delay(10000);
-  // start the web server on port 80
-  server.begin();
+  delay(10000); // wait 10 seconds for connection
+  server.begin(); // start the web server on port 80
   printWiFiStatus();
 }
 
 
 void loop() {
-  // compare the previous status to the current status
-  if (status != WiFi.status()) 
+  
+  if (status != WiFi.status()) // compare the previous status to the current status
     (status = WiFi.status()) == WL_AP_CONNECTED?
     Serial.println("Device connected to AP"):
     Serial.println("Device disconnected from AP");

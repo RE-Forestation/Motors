@@ -1,6 +1,8 @@
 #include <SPI.h>
 #include <WiFi.h>
+#include <Adafruit_PWMServoDriver.h>
 
+Adafruit_PWMServoDriver pca = Adafruit_PWMServoDriver(0x40);
 char ssid[] = "Ten Million";        // your network SSID (name)
 char pass[] = "10000000";    // your network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;                 // your network key index number (needed only for WEP)
@@ -8,6 +10,35 @@ int keyIndex = 0;                 // your network key index number (needed only 
 int status = WL_IDLE_STATUS;
 
 WiFiServer server(80);
+
+void setleftone(int value = 0){
+  pca.setPin(0,value);
+	pca.setPin(4,value);
+  pca.setPin(6,value);
+  Serial.println(value);
+}
+
+void setlefttwo(int value = 0){
+  pca.setPin(1,value);
+	pca.setPin(5,value);
+  pca.setPin(7,value);
+  Serial.println(value);
+}
+
+void setrightone(int value = 0){
+  pca.setPin(9,value);
+	pca.setPin(11,value);
+  pca.setPin(3,value);
+  Serial.println(value);
+}
+
+void setrighttwo(int value = 0){
+  Serial.println();
+  pca.setPin(8,value);
+	pca.setPin(10,value);
+  pca.setPin(2,value);
+  Serial.println(value);
+}
 
 void setup() {
   //Initialize serial and wait for port to open:
@@ -36,6 +67,9 @@ void setup() {
   server.begin();
   // you're connected now, so print out the status:
   printWifiStatus();
+
+  pca.begin();
+	pca.setPWMFreq(500); // GIGA default
 }
 
 
@@ -75,15 +109,18 @@ void loop() {
           if (currentLine.endsWith("rlForwa"))   digitalWrite(LED_GREEN, HIGH);
         }
         if(currentLine.length() > 16 && currentLine.substring(0, currentLine.length() - 16).endsWith("GET /")){
-          setrighttwo()
+          setrighttwo((currentLine.substring((currentLine.length() - 4),currentLine.length()).toInt()));
+          setrightone((currentLine.substring((currentLine.length() - 8),(currentLine.length() - 4)).toInt()));
+          setlefttwo((currentLine.substring((currentLine.length() - 12),(currentLine.length() - 8)).toInt()));
+          setleftone((currentLine.substring((currentLine.length() - 16),(currentLine.length() - 12)).toInt()));
         }
-        
       }
     }
     client.stop();// close the connection:
     Serial.println("client disconnected");
   }
 }
+
 
 
 void printWifiStatus() {
@@ -95,10 +132,4 @@ void printWifiStatus() {
   IPAddress ip = WiFi.localIP();
   Serial.print("IP Address: ");
   Serial.println(ip);
-
-  // print the received signal strength:
-  long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
-  Serial.print(rssi);
-  Serial.println(" dBm");
 }

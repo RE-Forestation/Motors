@@ -1,8 +1,8 @@
-import cv2  # requires pip
+import cv2
 import pygame
 from threading import Thread
 from queue import Queue, Empty
-import requests # requires pip
+import requests
 
 RTSP_URL = f"rtsp://Camera:Camera@192.168.0.100/stream2"
 defjoypos = (123, 483)
@@ -70,13 +70,12 @@ def send_request(head: int, tail: int, yaw: bool, direction: str) -> int:
 def solverequest(_amax: int, _smax: int, _apos: int, _spos: int) -> str:
     left1 = left2 = right1 = right2 = 0
     if _apos == 120 and _spos == 480:
-        print(
+        return (
+            "/" +
             str(int(left1)).zfill(4) +
             str(int(left2)).zfill(4) +
             str(int(right1)).zfill(4) +
-            str(int(right2)).zfill(4)
-        )
-        return "/rlForwa"
+            str(int(right2)).zfill(4))
     yaw = _apos > 120
     direction = _spos > 480
     head = 4095 * (abs(_spos / 120 - 4)) * (_smax - 248) / 395
@@ -91,7 +90,8 @@ def solverequest(_amax: int, _smax: int, _apos: int, _spos: int) -> str:
         left1, left2, right1, right2 = right1, right2, left1, left2
     if direction:
         left1, right1, left2, right2 = left2, right2, left1, right1
-    print(
+    return (
+        "/" +
         str(int(left1)).zfill(4) +
         str(int(left2)).zfill(4) +
         str(int(right1)).zfill(4) +
@@ -106,7 +106,7 @@ def initiatecap(_q: Queue):
 
 def sendreq(c: str):
     try:
-        requests.get("http://192.168.162.174" + c)
+        requests.get("http://192.168.126.174" + c)
         print("SUCCESS")
     except:
         print("FAILURE:" + c)

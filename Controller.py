@@ -42,31 +42,6 @@ def update_ssnake(pos: int) -> pygame.Rect:
     pygame.draw.circle(screen, (200, 200, 255), (pos, 568), 5)
     return returnrect
 
-
-def send_request(head: int, tail: int, yaw: bool, direction: str) -> int:
-    left1 = left2 = right1 = right2 = 0
-    if not direction:
-        left1 = head
-        if tail >= 0:
-            right1 = tail
-        else:
-            right2 = -tail
-    else:
-        left2 = head
-        if tail >= 0:
-            right2 = tail
-        else:
-            right1 = -tail
-    if yaw:
-        left1, left2, right1, right2 = right1, right2, left1, left2
-    print(
-        str(left1).zfill(4) +
-        str(left2).zfill(4) +
-        str(right1).zfill(4) +
-        str(right2).zfill(4)
-    )
-
-
 def solverequest(_amax: int, _smax: int, _apos: int, _spos: int) -> str:
     left1 = left2 = right1 = right2 = 0
     if _apos == 120 and _spos == 480:
@@ -106,8 +81,8 @@ def initiatecap(_q: Queue):
 
 def sendreq(c: str):
     try:
-        requests.get("http://192.168.126.174" + c)
-        print("SUCCESS")
+        requests.get("http://192.168.0.105" + c)
+        print("SUCCESS:" + c)
     except:
         print("FAILURE:" + c)
 
@@ -116,6 +91,7 @@ pygame.init()
 
 joy = pygame.transform.scale(pygame.image.load("Joy.png"), (230, 230))
 snake = pygame.transform.scale(pygame.image.load("Snake.png"), (387, 10))
+font = pygame.font.SysFont(name="arial",size=30)
 q = Queue()
 Thread(target=initiatecap, args=(q,)).start()
 cap = None
@@ -125,8 +101,8 @@ count = 0
 command = ""
 amax = 637
 smax = 637
-spos = 120
-apos = 480
+spos = 480
+apos = 120
 
 pygame.display.set_caption("Controller")
 screen = pygame.display.set_mode((640, 600))
@@ -170,3 +146,11 @@ while True:
                 command = solverequest(amax, smax, apos, spos)
     if cap:
         pygame.display.update(refresh_video())
+    screen.fill((0,0,0), pygame.Rect(350,510,350,55))
+    textrect = screen.blit(font.render(
+        str(apos) + "/" +
+        str(amax - 249) + " " +
+        str(spos - 360) + "/" +
+        str(smax - 249)
+        , False, (100,100,255)), (350,510))
+    pygame.display.update(textrect)

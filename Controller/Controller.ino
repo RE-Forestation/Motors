@@ -1,3 +1,5 @@
+#include <Adafruit_PWMServoDriver.h>
+
 #include <SPI.h>
 #include <WiFi.h>
 #include <Adafruit_PWMServoDriver.h>
@@ -5,7 +7,6 @@
 Adafruit_PWMServoDriver pca = Adafruit_PWMServoDriver(0x40);
 char ssid[] = "Ten Million";        // your network SSID (name)
 char pass[] = "10000000";    // your network password (use for WPA, or use as key for WEP)
-int keyIndex = 0;                 // your network key index number (needed only for WEP)
 
 int status = WL_IDLE_STATUS;
 
@@ -134,12 +135,13 @@ void loop() {
         //These are for the app
         if(currentLine.length() > 5 && currentLine.substring(0, currentLine.length() - 5).endsWith("GET /")){ //keyboard bindings
           digitalWrite(LED_RED, LOW);
-          int value = (currentLine.substring((currentLine.length() - 5),(currentLine.length() - 1)).toInt())
-          switch(currentLine.length()){
-            case "F": forward(value); break;
-            case "B": backward(value); break;
-            case "L": left(value); break;
-            case "R": right(value); break;
+          int value = (currentLine.substring((currentLine.length() - 5),(currentLine.length() - 1)).toInt());
+          Serial.println(value);
+          switch((currentLine[currentLine.length() - 2])){
+            case 'f': forward(value); break;
+            case 'b': backward(value); break;
+            case 'l': left(value); break;
+            case 'r': right(value); break;
           }
         }
         else if(currentLine.length() > 16 && currentLine.substring(0, currentLine.length() - 16).endsWith("GET /")){ //screen bindings

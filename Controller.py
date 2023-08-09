@@ -5,9 +5,8 @@ from queue import Queue, Empty
 import requests
 
 RTSP_URL = f"rtsp://Camera:Camera@192.168.0.100/stream2"
-defjoypos = (123, 483)
-defasnakepos = 625
-defssnakepos = 625
+Server_IP = "192.168.126.174"
+
 def refresh_video() -> pygame.Rect: # Blits onto display
     ret, frame = cap.read()
     if ret:
@@ -106,7 +105,7 @@ def initiatecap(_q: Queue):
 
 def sendreq(c: str):
     try:
-        requests.get("http://192.168.126.174" + c)
+        requests.get("http://" + Server_IP + c)
         print("SUCCESS")
     except:
         print("FAILURE:" + c)
@@ -123,10 +122,14 @@ cap = None
 t = Thread()
 count = 0
 command = ""
-amax = 637
-smax = 637
-spos = 120
-apos = 480
+amax = 625
+smax = 625
+spos = 123
+apos = 483
+defjoypos = (123, 483)
+defasnakepos = 625
+defssnakepos = 625
+
 key = None
 
 pygame.display.set_caption("Controller")
@@ -149,9 +152,9 @@ while True:
             case pygame.QUIT:
                 pygame.quit()
                 exit()
-            case pygame.MOUSEBUTTONDOWN:
+            case pygame.MOUSEBUTTONDOWN if not key:
                 pygame.display.update(update_joystick(pygame.mouse.get_pos()))
-            case pygame.MOUSEMOTION if sum(pygame.mouse.get_pressed()):
+            case pygame.MOUSEMOTION if sum(pygame.mouse.get_pressed() and not key):
                 pos = pygame.mouse.get_pos()
                 if 0 < pos[0] < 240 and 360 < pos[1] < 600:
                     pygame.display.update(update_joystick(pos))
@@ -165,7 +168,7 @@ while True:
                     elif 242 < pos[0] < 637 and 562 < pos[1] < 577:
                         smax = max(249, min(pos[0], 625))
                         pygame.display.update(update_ssnake(smax))
-            case pygame.MOUSEBUTTONUP:
+            case pygame.MOUSEBUTTONUP if not key:
                 pygame.display.update(update_joystick(defjoypos))
                 apos = 120
                 spos = 480
@@ -184,6 +187,7 @@ while True:
             case pygame.KEYUP if key == event.key:
                 key = None
                 command = "0000" + command[-1]
+    print(command)
     if cap:
         pygame.display.update(refresh_video())
     screen.fill((0,0,0), pygame.Rect(350,510,350,55))

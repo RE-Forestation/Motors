@@ -15,10 +15,10 @@ void setup() {
 }
 
 void loop() {
-  PWM = pwmMotor.write(0,100,480);
+  PWM = pwmMotor.write(20,100,480);
   PCA.setPWM(15,0,PWM);
   delay(2000);
-  PWM = pwmMotor.write(180,100,480);
+  PWM = pwmMotor.write(80,100,480);
   PCA.setPWM(15,0,PWM);
   delay(2000);
 }

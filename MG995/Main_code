@@ -1,0 +1,24 @@
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+#include "myServo.h"
+
+
+int PWM;
+MyServo pwmMotor;
+Adafruit_PWMServoDriver PCA = Adafruit_PWMServoDriver(0x40);
+
+
+void setup() {
+  PCA.begin();
+  PCA.setPWMFreq(50);
+
+}
+
+void loop() {
+  PWM = pwmMotor.write(0,100,480);
+  PCA.setPWM(15,0,PWM);
+  delay(2000);
+  PWM = pwmMotor.write(180,100,480);
+  PCA.setPWM(15,0,PWM);
+  delay(2000);
+}

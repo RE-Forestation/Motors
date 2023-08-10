@@ -1,6 +1,6 @@
-//Testing_123
 #include <Wire.h>
 #include <MPU9250_asukiaaa.h>
+#include <Math.h>
 
 #define pi 3.1415926
 #define two_pi 3.1415926*2
@@ -36,9 +36,19 @@ float magXoffset = 0.00;
 float magYoffset = 0.00;
 float magZoffset = 0.00;
 
+//Acceleration calculated angle for drift reduction 
+float roll_accel_angle = 0.00;
+float pitch_accel_angle = 0.00;
+float alpha = 0.1;
+float gravity = 9.81; 
+volatile float roll_1 = 0.00;
+volatile float pitch_1 = 0.00;
+
+
 uint8_t sensorId = 0;
 int result = 0;
 double theta_gyro = 0.0;
+float dt = 0.1;
 
 
 void setupSensors() {
@@ -224,19 +234,30 @@ void loop() {
   Serial.print("gX: " + String(gX) + "gY: " + String(gY) + "gZ: " + String(gZ));
   Serial.print(" | ");
   Serial.print("aX: " + String(aX) + "aY: " + String(aY) + "aZ: " + String(aZ));
-  Serial.print(" | ");
+  Serial.println(" | ");
   
 
   //Integrating gyro around z-axis:
-  double dt = 0.1;
   double dth_gyro = dt * gZ; 
-
   theta_gyro += dth_gyro;
   Serial.println("theta_gyro: " + String(theta_gyro));
-
-
+  //reduceGyroDrift();
   delay(100);
   
   
   
+}
+/* Failed Complemetary filter
+void reduceGyroDrift(){
+  roll_accel_angle = atan(aY/aZ);
+  pitch_accel_angle = asin(aX/gravity);
+  roll_1 = roll_accel_angle*(alpha) + (1-alpha)*(roll_1 + dt* gY);
+  pitch_1 = pitch_accel_angle*(alpha) + (1-alpha)*(pitch_1 + dt*gZ);
+  Serial.print("roll_1: " + String(roll_1));
+  Serial.print(" | ");
+  Serial.print("pitch_1: " + String(pitch_1));
+*/
+
+
+
 }

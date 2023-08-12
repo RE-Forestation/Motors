@@ -5,7 +5,7 @@ from queue import Queue, Empty
 import requests
 
 RTSP_URL = f"rtsp://Camera:Camera@192.168.0.100/stream2"
-Server_IP = "192.168.126.174"
+Server_IP = "192.168.194.174"
 
 def refresh_video() -> pygame.Rect: # Blits onto display
     ret, frame = cap.read()
@@ -106,7 +106,6 @@ def initiatecap(_q: Queue):
 def sendreq(c: str):
     try:
         requests.get("http://" + Server_IP + c)
-        print("SUCCESS")
     except:
         print("FAILURE:" + c)
 
@@ -129,6 +128,7 @@ apos = 483
 defjoypos = (123, 483)
 defasnakepos = 625
 defssnakepos = 625
+direction = ''
 
 key = None
 
@@ -142,7 +142,6 @@ while True:
     if not t.is_alive():
         t = Thread(target=sendreq, args=(command,))
         t.start()
-        command = ""
     try:
         cap = q.get(block=False)
     except Empty:
@@ -154,7 +153,7 @@ while True:
                 exit()
             case pygame.MOUSEBUTTONDOWN if not key:
                 pygame.display.update(update_joystick(pygame.mouse.get_pos()))
-            case pygame.MOUSEMOTION if sum(pygame.mouse.get_pressed() and not key):
+            case pygame.MOUSEMOTION if sum(pygame.mouse.get_pressed()) and not key:
                 pos = pygame.mouse.get_pos()
                 if 0 < pos[0] < 240 and 360 < pos[1] < 600:
                     pygame.display.update(update_joystick(pos))
@@ -177,24 +176,18 @@ while True:
                 key = event.key
                 match event.key:
                     case pygame.K_w:
-                        command = str(smax).zfill(4) + 'f'
+                        direction = 'f'
                     case pygame.K_s:
-                        command = str(smax).zfill(4) + 'b'
+                        direction = 'b'
                     case pygame.K_a:
-                        command = str(smax).zfill(4) + 'l'
+                        direction = 'l'
                     case pygame.K_d:
-                        command = str(smax).zfill(4) + 'r'
-            case pygame.KEYUP if key == event.key:
+                        direction = 'r'
+                command = "/A" + str(int(4095 * (smax - 248)/377)).zfill(4) + direction
+            case pygame.KEYUP if key == event.key and len(command) == 7:
                 key = None
-                command = "0000" + command[-1]
-    print(command)
+                command = "/A0000" + direction
+    if command:
+        print("\r" + command, end="")
     if cap:
         pygame.display.update(refresh_video())
-    screen.fill((0,0,0), pygame.Rect(350,510,350,55))
-    textrect = screen.blit(font.render(
-        str(apos) + "/" +
-        str(amax - 249) + " " +
-        str(spos - 360) + "/" +
-        str(smax - 249)
-        , False, (100,100,255)), (350,510))
-    pygame.display.update(textrect)

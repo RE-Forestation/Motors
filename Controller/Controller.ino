@@ -105,23 +105,22 @@ void setup() {
 
   pca.begin();
 	pca.setPWMFreq(500); // GIGA default
+  
 }
 
 
 void loop() {
   // listen for incoming clients
   WiFiClient client = server.available();
+  digitalWrite(LED_BLUE,LOW);
     if (client) {                    // if you get a client,
-    Serial.println("new client");  // print a message out the serial port
+    digitalWrite(LED_BLUE, HIGH);
     String currentLine = "";       // make a String to hold incoming data from the client
     while (client.connected()) {   // loop while the client's connected
       delayMicroseconds(10);       // This is required for the Arduino Nano RP2040 Connect - otherwise it will loop so fast that SPI will never be served.
       if (client.available()) {    // if there's bytes to read from the client,
         char c = client.read();    // read a byte, then
-        Serial.write(c);           // print it out the serial monitor
         if (c == '\n')           // if the byte is a newline character
-          // if the current line is blank, you got two newline characters in a row.
-          // that's the end of the client HTTP request, so send a response:
           if (!currentLine.length()) {
             client.println("HTTP/1.1 200 OK"); // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
             client.println("Content-type:text/html"); // and a content-type so the client knows what's coming, then a blank line
@@ -133,7 +132,7 @@ void loop() {
         else if (c != '\r') currentLine += c;      // if you got anything else but a carriage return character add it to the end of the currentLine
 
         //These are for the app
-        if(currentLine.length() > 5 && currentLine.substring(0, currentLine.length() - 5).endsWith("GET /")){ //keyboard bindings
+        if(currentLine.length() > 5 && (currentLine.substring(0, currentLine.length() - 5)).endsWith("GET /A")){ //keyboard bindings
           digitalWrite(LED_RED, LOW);
           int value = (currentLine.substring((currentLine.length() - 5),(currentLine.length() - 1)).toInt());
           Serial.println(value);
@@ -156,7 +155,6 @@ void loop() {
     client.stop();// close the connection:
     digitalWrite(LED_RED, HIGH);
     digitalWrite(LED_GREEN, HIGH);
-    Serial.println("client disconnected");
   }
 }
 

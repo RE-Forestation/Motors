@@ -42,43 +42,19 @@ def update_ssnake(pos: int) -> pygame.Rect:
     return returnrect
 
 
-def send_request(head: int, tail: int, yaw: bool, direction: str) -> int:
-    left1 = left2 = right1 = right2 = 0
-    if not direction:
-        left1 = head
-        if tail >= 0:
-            right1 = tail
-        else:
-            right2 = -tail
-    else:
-        left2 = head
-        if tail >= 0:
-            right2 = tail
-        else:
-            right1 = -tail
-    if yaw:
-        left1, left2, right1, right2 = right1, right2, left1, left2
-    print(
-        str(left1).zfill(4) +
-        str(left2).zfill(4) +
-        str(right1).zfill(4) +
-        str(right2).zfill(4)
-    )
-
-
 def solverequest(_amax: int, _smax: int, _apos: int, _spos: int) -> str:
     left1 = left2 = right1 = right2 = 0
-    if _apos == 120 and _spos == 480:
+    if (_apos, _spos) == defjoypos:
         return (
             "/" +
             str(int(left1)).zfill(4) +
             str(int(left2)).zfill(4) +
             str(int(right1)).zfill(4) +
             str(int(right2)).zfill(4))
-    yaw = _apos > 120
-    direction = _spos > 480
-    head = 4095 * (abs(_spos / 120 - 4)) * (_smax - 248) / 395
-    tail = head - 4095 * (abs(_apos / 120 - 1)) * (_amax - 248) / 395
+    yaw = _apos > defjoypos[0]
+    direction = _spos > defjoypos[1]
+    head = 4095 * (abs(((_spos - 360) / (defjoypos[1] - 360)) - 1)) * (_smax - 248) / 395
+    tail = head - 4095 * (abs((_apos / defjoypos[0]) - 1)) * (_amax - 248) / 395
     left2 = right1 = right2 = 0
     left1 = head
     if tail > 0:
@@ -96,7 +72,6 @@ def solverequest(_amax: int, _smax: int, _apos: int, _spos: int) -> str:
         str(int(right1)).zfill(4) +
         str(int(right2)).zfill(4)
     )
-    return "/plForwa"
 
 
 def initiatecap(_q: Queue):
@@ -106,88 +81,106 @@ def initiatecap(_q: Queue):
 def sendreq(c: str):
     try:
         requests.get("http://" + Server_IP + c)
-    except:
+    except requests.exceptions.HTTPError:
         print("FAILURE:" + c)
 
 
-pygame.init()
+# Settles video feed
+q = Queue()
+cap = None
+Thread(target=initiatecap, args=(q,)).start()
 
+# Settles http requests
+t = Thread()
+command = ""
+heading = ''
+key = None
+mode = True
+
+pygame.init()
 joy = pygame.transform.scale(pygame.image.load("Joy.png"), (230, 230))
 snake = pygame.transform.scale(pygame.image.load("Snake.png"), (387, 10))
-q = Queue()
-Thread(target=initiatecap, args=(q,)).start()
-cap = None
-
-t = Thread()
-count = 0
-command = ""
-amax = 625
-smax = 625
-spos = 123
-apos = 483
+blitlist = []
+defasnakepos = amax = 625
+defssnakepos = smax = 625
 defjoypos = (123, 483)
-defasnakepos = 625
-defssnakepos = 625
-direction = ''
-
-key = None
+apos, spos = defjoypos
 
 pygame.display.set_caption("Controller")
 screen = pygame.display.set_mode((640, 600))
 pygame.display.update(update_joystick(defjoypos))
 pygame.display.update(update_asnake(defasnakepos))
 pygame.display.update(update_ssnake(defssnakepos))
-
 while True:
-    if not t.is_alive():
-        t = Thread(target=sendreq, args=(command,))
-        t.start()
-    try:
-        cap = q.get(block=False)
-    except Empty:
-        pass
     for event in pygame.event.get():
         match event.type:
             case pygame.QUIT:
                 pygame.quit()
                 exit()
-            case pygame.MOUSEBUTTONDOWN if not key:
-                pygame.display.update(update_joystick(pygame.mouse.get_pos()))
-            case pygame.MOUSEMOTION if sum(pygame.mouse.get_pressed()) and not key:
-                pos = pygame.mouse.get_pos()
-                if 0 < pos[0] < 240 and 360 < pos[1] < 600:
-                    pygame.display.update(update_joystick(pos))
-                    apos, spos = pos
+            case pygame.KEYDOWN if event.key == pygame.K_SPACE:
+                mode = not mode
+                blitlist.append(update_joystick(defjoypos))
+        if mode:
+            match event.type:
+                case pygame.KEYDOWN if not key:
+                    key = event.key
+                    match event.key:
+                        case pygame.K_w:
+                            heading = 'f'
+                        case pygame.K_s:
+                            heading = 'b'
+                        case pygame.K_a:
+                            heading = 'l'
+                        case pygame.K_d:
+                            heading = 'r'
+                    command = "/A" + str(int(4095 * (smax - 248) / 377)).zfill(4) + heading
+                case pygame.KEYUP if key == event.key and (len(command) == 7 or len(command) == 17):
+                    key = None
+                    command = "/A0000" + heading
+                case pygame.MOUSEBUTTONDOWN:
+                    mpos = pygame.mouse.get_pos()
+                    if 242 < mpos[0] < 637 and 562 < mpos[1] < 577:
+                        smax = max(249, min(mpos[0], 625))
+                        blitlist.append(update_ssnake(smax))
+                case pygame.MOUSEMOTION if sum(pygame.mouse.get_pressed()):
+                    mpos = pygame.mouse.get_pos()
+                    if 242 < mpos[0] < 637 and 562 < mpos[1] < 577:
+                        smax = max(249, min(mpos[0], 625))
+                        blitlist.append(update_ssnake(smax))
+        else:
+            match event.type:
+                case pygame.MOUSEBUTTONDOWN:
+                    blitlist.append(update_joystick(pygame.mouse.get_pos()))
+                case pygame.MOUSEMOTION if sum(pygame.mouse.get_pressed()):
+                    pos = pygame.mouse.get_pos()
+                    if 0 < pos[0] < 240 and 360 < pos[1] < 600:
+                        blitlist.append(update_joystick(pos))
+                        apos, spos = pos
+                        command = solverequest(amax, smax, apos, spos)
+                    else:
+                        blitlist.append(update_joystick(defjoypos))
+                        if 242 < pos[0] < 637 and 462 < pos[1] < 477:
+                            amax = max(249, min(pos[0], 625))
+                            blitlist.append(update_asnake(amax))
+                        elif 242 < pos[0] < 637 and 562 < pos[1] < 577:
+                            smax = max(249, min(pos[0], 625))
+                            blitlist.append(update_ssnake(smax))
+                case pygame.MOUSEBUTTONUP:
+                    blitlist.append(update_joystick(defjoypos))
+                    apos, spos = defjoypos
                     command = solverequest(amax, smax, apos, spos)
-                else:
-                    pygame.display.update(update_joystick(defjoypos))
-                    if 242 < pos[0] < 637 and 462 < pos[1] < 477:
-                        amax = max(249, min(pos[0], 625))
-                        pygame.display.update(update_asnake(amax))
-                    elif 242 < pos[0] < 637 and 562 < pos[1] < 577:
-                        smax = max(249, min(pos[0], 625))
-                        pygame.display.update(update_ssnake(smax))
-            case pygame.MOUSEBUTTONUP if not key:
-                pygame.display.update(update_joystick(defjoypos))
-                apos = 120
-                spos = 480
-                command = solverequest(amax, smax, apos, spos)
-            case pygame.KEYDOWN if not key:
-                key = event.key
-                match event.key:
-                    case pygame.K_w:
-                        direction = 'f'
-                    case pygame.K_s:
-                        direction = 'b'
-                    case pygame.K_a:
-                        direction = 'l'
-                    case pygame.K_d:
-                        direction = 'r'
-                command = "/A" + str(int(4095 * (smax - 248)/377)).zfill(4) + direction
-            case pygame.KEYUP if key == event.key and len(command) == 7:
-                key = None
-                command = "/A0000" + direction
     if command:
-        print("\r" + command, end="")
-    if cap:
-        pygame.display.update(refresh_video())
+        print("\r" + str(len(command)) + command, end="")
+        if not t.is_alive():
+            t = Thread(target=sendreq, args=(command,))
+            t.start()
+    if not cap:
+        try:
+            cap = q.get(block=False)
+        except Empty:
+            pass
+    else:
+        blitlist.append(refresh_video())
+    pygame.display.update(blitlist)
+    blitlist = []
+    

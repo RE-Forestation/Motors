@@ -183,4 +183,3 @@ while True:
         blitlist.append(refresh_video())
     pygame.display.update(blitlist)
     blitlist = []
-    

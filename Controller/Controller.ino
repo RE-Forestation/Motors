@@ -5,38 +5,39 @@
 #include <Adafruit_PWMServoDriver.h>
 
 Adafruit_PWMServoDriver pca = Adafruit_PWMServoDriver(0x40);
-char ssid[] = "Ten Million";        // your network SSID (name)
-char pass[] = "10000000";    // your network password (use for WPA, or use as key for WEP)
+Adafruit_PWMServoDriver servo = Adafruit_PWMServoDriver(0x41);
+char ssid[] = "legalslavery";        // your network SSID (name)
+char pass[] = "atleast8char";    // your network password (use for WPA, or use as key for WEP)
 
 int status = WL_IDLE_STATUS;
-
+bool e = true;
 WiFiServer server(80);
 
-void setlefttwo(int value){
+void setleftone(int value){
   pca.setPin(0,value);
-	pca.setPin(4,value);
+  pca.setPin(4,value);
   pca.setPin(6,value);
   Serial.println(value);
 }
 
-void setleftone(int value){
+void setlefttwo(int value){
   pca.setPin(1,value);
-	pca.setPin(5,value);
+  pca.setPin(5,value);
   pca.setPin(7,value);
   Serial.println(value);
 }
 
-void setrightone(int value){
+void setrighttwo(int value){
   pca.setPin(9,value);
-	pca.setPin(11,value);
+  pca.setPin(11,value);
   pca.setPin(3,value);
   Serial.println(value);
 }
 
-void setrighttwo(int value){
+void setrightone(int value){
   Serial.println();
   pca.setPin(8,value);
-	pca.setPin(10,value);
+  pca.setPin(10,value);
   pca.setPin(2,value);
   Serial.println(value);
 }
@@ -44,37 +45,41 @@ void setrighttwo(int value){
 void forward(int value){
   pca.setPin(1,value);
   pca.setPin(3,value);
-	pca.setPin(5,value);
+  pca.setPin(5,value);
   pca.setPin(7,value);
   pca.setPin(9,value);
   pca.setPin(11,value);
+  Serial.println(value);
 }
 
 void backward(int value){
   pca.setPin(0,value);
   pca.setPin(2,value);
-	pca.setPin(4,value);
+  pca.setPin(4,value);
   pca.setPin(6,value);
   pca.setPin(8,value);
-	pca.setPin(10,value);
+  pca.setPin(10,value);
+  Serial.println(value);
 }
 
 void left(int value){
   pca.setPin(1,value);
   pca.setPin(2,value);
-	pca.setPin(5,value);
+  pca.setPin(5,value);
   pca.setPin(7,value);
   pca.setPin(8,value);
-	pca.setPin(10,value);
+  pca.setPin(10,value);
+  Serial.println(value);
 }
 
 void right(int value){
   pca.setPin(0,value);
   pca.setPin(3,value);
-	pca.setPin(4,value);
+  pca.setPin(4,value);
   pca.setPin(6,value);
   pca.setPin(9,value);
-	pca.setPin(11,value);
+  pca.setPin(11,value);
+  Serial.println(value);
 }
 
 
@@ -104,7 +109,9 @@ void setup() {
   printWifiStatus();
 
   pca.begin();
-	pca.setPWMFreq(500); // GIGA default
+  pca.setPWMFreq(500); // GIGA default
+  left(0);
+  right(0);
   
 }
 
@@ -132,11 +139,11 @@ void loop() {
         else if (c != '\r') currentLine += c;      // if you got anything else but a carriage return character add it to the end of the currentLine
 
         //These are for the app
-        if(currentLine.length() > 5 && (currentLine.substring(0, currentLine.length() - 5)).endsWith("GET /A")){ //keyboard bindings
+        if(currentLine.endsWith("GET /Z")){(e=!e)?servo.setPin(0,120):servo.setPin(0,160); digitalWrite(LED_GREEN,LOW);}
+        else if(currentLine.length() > 5 && (currentLine.substring(0, currentLine.length() - 5)).endsWith("GET /A")){ //keyboard bindings
           digitalWrite(LED_RED, LOW);
           int value = (currentLine.substring((currentLine.length() - 5),(currentLine.length() - 1)).toInt());
-          Serial.println(value);
-          switch((currentLine[currentLine.length() - 2])){
+          switch((currentLine[currentLine.length() - 1])){
             case 'f': forward(value); break;
             case 'b': backward(value); break;
             case 'l': left(value); break;
@@ -144,7 +151,6 @@ void loop() {
           }
         }
         else if(currentLine.length() > 16 && currentLine.substring(0, currentLine.length() - 16).endsWith("GET /")){ //screen bindings
-          digitalWrite(LED_GREEN, LOW);
           setrighttwo((currentLine.substring((currentLine.length() - 4),currentLine.length()).toInt()));
           setrightone((currentLine.substring((currentLine.length() - 8),(currentLine.length() - 4)).toInt()));
           setlefttwo((currentLine.substring((currentLine.length() - 12),(currentLine.length() - 8)).toInt()));

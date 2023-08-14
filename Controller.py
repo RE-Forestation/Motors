@@ -4,8 +4,8 @@ from threading import Thread
 from queue import Queue, Empty
 import requests
 
-RTSP_URL = f"rtsp://Camera:Camera@192.168.0.100/stream2"
-Server_IP = "192.168.194.174"
+RTSP_URL = f"rtsp://camera:camera@192.168.40.93/stream2"
+Server_IP = "192.168.40.246"
 
 def refresh_video() -> pygame.Rect: # Blits onto display
     ret, frame = cap.read()
@@ -120,55 +120,58 @@ while True:
             case pygame.KEYDOWN if event.key == pygame.K_SPACE:
                 mode = not mode
                 blitlist.append(update_joystick(defjoypos))
-        if mode:
-            match event.type:
-                case pygame.KEYDOWN if not key:
-                    key = event.key
-                    match event.key:
-                        case pygame.K_w:
-                            heading = 'f'
-                        case pygame.K_s:
-                            heading = 'b'
-                        case pygame.K_a:
-                            heading = 'l'
-                        case pygame.K_d:
-                            heading = 'r'
-                    command = "/A" + str(int(4095 * (smax - 248) / 377)).zfill(4) + heading
-                case pygame.KEYUP if key == event.key and (len(command) == 7 or len(command) == 17):
-                    key = None
-                    command = "/A0000" + heading
-                case pygame.MOUSEBUTTONDOWN:
-                    mpos = pygame.mouse.get_pos()
-                    if 242 < mpos[0] < 637 and 562 < mpos[1] < 577:
-                        smax = max(249, min(mpos[0], 625))
-                        blitlist.append(update_ssnake(smax))
-                case pygame.MOUSEMOTION if sum(pygame.mouse.get_pressed()):
-                    mpos = pygame.mouse.get_pos()
-                    if 242 < mpos[0] < 637 and 562 < mpos[1] < 577:
-                        smax = max(249, min(mpos[0], 625))
-                        blitlist.append(update_ssnake(smax))
-        else:
-            match event.type:
-                case pygame.MOUSEBUTTONDOWN:
-                    blitlist.append(update_joystick(pygame.mouse.get_pos()))
-                case pygame.MOUSEMOTION if sum(pygame.mouse.get_pressed()):
-                    pos = pygame.mouse.get_pos()
-                    if 0 < pos[0] < 240 and 360 < pos[1] < 600:
-                        blitlist.append(update_joystick(pos))
-                        apos, spos = pos
-                        command = solverequest(amax, smax, apos, spos)
-                    else:
-                        blitlist.append(update_joystick(defjoypos))
-                        if 242 < pos[0] < 637 and 462 < pos[1] < 477:
-                            amax = max(249, min(pos[0], 625))
-                            blitlist.append(update_asnake(amax))
-                        elif 242 < pos[0] < 637 and 562 < pos[1] < 577:
-                            smax = max(249, min(pos[0], 625))
-                            blitlist.append(update_ssnake(smax))
-                case pygame.MOUSEBUTTONUP:
-                    blitlist.append(update_joystick(defjoypos))
-                    apos, spos = defjoypos
-                    command = solverequest(amax, smax, apos, spos)
+            case pygame.KEYDOWN if event.key == pygame.K_g:
+                command = "/Z"
+            case _:
+                if mode:
+                    match event.type:
+                        case pygame.KEYDOWN if not key:
+                            key = event.key
+                            match event.key:
+                                case pygame.K_w:
+                                    heading = 'f'
+                                case pygame.K_s:
+                                    heading = 'b'
+                                case pygame.K_a:
+                                    heading = 'l'
+                                case pygame.K_d:
+                                    heading = 'r'
+                            command = "/A" + str(int(4095 * (smax - 248) / 377)).zfill(4) + heading
+                        case pygame.KEYUP if key == event.key and (len(command) == 7 or len(command) == 17):
+                            key = None
+                            command = "/A0000" + heading
+                        case pygame.MOUSEBUTTONDOWN:
+                            mpos = pygame.mouse.get_pos()
+                            if 242 < mpos[0] < 637 and 562 < mpos[1] < 577:
+                                smax = max(249, min(mpos[0], 625))
+                                blitlist.append(update_ssnake(smax))
+                        case pygame.MOUSEMOTION if sum(pygame.mouse.get_pressed()):
+                            mpos = pygame.mouse.get_pos()
+                            if 242 < mpos[0] < 637 and 562 < mpos[1] < 577:
+                                smax = max(249, min(mpos[0], 625))
+                                blitlist.append(update_ssnake(smax))
+                else:
+                    match event.type:
+                        case pygame.MOUSEBUTTONDOWN:
+                            blitlist.append(update_joystick(pygame.mouse.get_pos()))
+                        case pygame.MOUSEMOTION if sum(pygame.mouse.get_pressed()):
+                            pos = pygame.mouse.get_pos()
+                            if 0 < pos[0] < 240 and 360 < pos[1] < 600:
+                                blitlist.append(update_joystick(pos))
+                                apos, spos = pos
+                                command = solverequest(amax, smax, apos, spos)
+                            else:
+                                blitlist.append(update_joystick(defjoypos))
+                                if 242 < pos[0] < 637 and 462 < pos[1] < 477:
+                                    amax = max(249, min(pos[0], 625))
+                                    blitlist.append(update_asnake(amax))
+                                elif 242 < pos[0] < 637 and 562 < pos[1] < 577:
+                                    smax = max(249, min(pos[0], 625))
+                                    blitlist.append(update_ssnake(smax))
+                        case pygame.MOUSEBUTTONUP:
+                            blitlist.append(update_joystick(defjoypos))
+                            apos, spos = defjoypos
+                            command = solverequest(amax, smax, apos, spos)
     if command:
         print("\r" + str(len(command)) + command, end="")
         if not t.is_alive():

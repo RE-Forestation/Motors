@@ -1,5 +1,4 @@
 #include <Adafruit_PWMServoDriver.h>
-
 #include <SPI.h>
 #include <WiFi.h>
 #include <Adafruit_PWMServoDriver.h>
@@ -90,18 +89,21 @@ void right(int value)
   Serial.println(value);
 }
 
+bool drop(bool cur){
+  left(0);
+  right(0);
+  cur ? servo.setPin(0, 120) : servo.setPin(0, 160);
+  delay(1000);
+  return !cur;
+}
+
 void setup()
 {
-  // Initialize serial and wait for port to open:
   Serial.begin(9600);
-
-  // check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE)
   {
     Serial.println("Communication with WiFi module failed!");
-    // don't continue
-    while (true)
-      ;
+    while (true);
   }
 
   // attempt to connect to WiFi network:
@@ -109,14 +111,10 @@ void setup()
   {
     Serial.print("Attempting to connect to SSID: ");
     Serial.println(ssid);
-    // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
-
-    // wait 10 seconds for connection:
     delay(10000);
   }
   server.begin();
-  // you're connected now, so print out the status:
   printWifiStatus();
 
   pca.begin();
@@ -158,7 +156,7 @@ void loop()
         // These are for the app
         if (currentLine.endsWith("GET /Z"))
         {
-          (e = !e) ? servo.setPin(0, 120) : servo.setPin(0, 160);
+          e = drop(e)
           digitalWrite(LED_GREEN, LOW);
         }
         else if (currentLine.length() > 5 && (currentLine.substring(0, currentLine.length() - 5)).endsWith("GET /A"))

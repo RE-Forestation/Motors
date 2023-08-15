@@ -157,7 +157,7 @@ void loop()
         // These are for the app
         if (currentLine.endsWith("GET /Z"))
         {
-          e = drop(e)
+          e = drop(e);
           digitalWrite(LED_GREEN, LOW);
         }
         else if (currentLine.length() > 5 && (currentLine.substring(0, currentLine.length() - 5)).endsWith("GET /A"))

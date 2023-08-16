@@ -120,10 +120,12 @@ while True:
                 exit()
             case pygame.KEYDOWN if event.key == pygame.K_SPACE:
                 mode = not mode
+                break
                 blitlist.append(update_joystick(defjoypos))
             case pygame.KEYDOWN if event.key == pygame.K_g:
                 sendreq("/Z")
                 sleep(5)
+                break
             case _:
                 if mode:
                     match event.type:
